@@ -1,0 +1,24 @@
+ 
+
+ 
+ 
+ 
+ 
+BUGS
+ 
+ 
+UserWarning: PyGobject bug causing label position error; 
+should be fixed in PyGObject >= 3.29.1  warnings.warn("PyGobject
+bug causing label position error; 
+--------------------------------------------------------
+Development libraries usually don't show up very well in the software center. 
+Usually using apt-cache search will help here. So for example:
+
+apt-cache search python gobject
+
+Will show you all the packages related to python and gobject introspection.
+
+https://askubuntu.com/questions/419945/how-does-one-install-pygobject-from-the-official-repository
+--------------------------------------------------------- 
+ 
+ 
