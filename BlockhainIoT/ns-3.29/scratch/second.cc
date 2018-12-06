@@ -39,7 +39,7 @@ int
 main (int argc, char *argv[])
 {
   bool verbose = true;
-  uint32_t nCsma = 3;
+  uint32_t nCsma = 7;
 
   CommandLine cmd;
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
@@ -89,20 +89,24 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer csmaInterfaces;
   csmaInterfaces = address.Assign (csmaDevices);
 
-  UdpEchoServerHelper echoServer (9);
+  UdpEchoServerHelper echoServer (14);
 
   ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
 
-  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
+  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 14);
+  echoClient.SetAttribute ("MaxPackets", UintegerValue (8));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
   ApplicationContainer clientApps = echoClient.Install (p2pNodes.Get (0));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
+
+  ApplicationContainer clientApps1 = echoClient.Install (csmaNodes.Get (6));
+  clientApps1.Start (Seconds (3.0));
+  clientApps1.Stop (Seconds (10.0));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
