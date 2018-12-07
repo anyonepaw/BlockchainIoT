@@ -25,10 +25,17 @@ main (int argc, char *argv[])
 {
   NS_LOG_UNCOND ("");
 
+  int numberOfNodes = 2;
   //Creating a wireless network
-  //NodeContainer wifiStaNodes;
- // wifiStaNodes.Create(nWifi);
- // NodeContainer wifiApNode = p2pNodes.Get(0);
+  NodeContainer wifiNodes;
+  wifiNodes.Create(2);
+
+  std::cout << "there is " << numberOfNodes << " wifi nodes";
+  //NodeContainer wifiApNode = nodes.Get(0);
+
+
+
+
 
   Simulator::Run ();
   Simulator::Destroy ();
