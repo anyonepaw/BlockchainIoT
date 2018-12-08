@@ -34,9 +34,6 @@ main (int argc, char *argv[])
   //NodeContainer wifiApNode = nodes.Get(0);
 
 
-
-
-
   Simulator::Run ();
   Simulator::Destroy ();
 
