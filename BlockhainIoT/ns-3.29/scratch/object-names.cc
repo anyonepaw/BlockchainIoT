@@ -129,10 +129,10 @@ main (int argc, char *argv[])
   //
   ApplicationContainer apps = server.Install ("/Names/server");
   apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (20.0));
+  apps.Stop (Seconds (10.0));
 
   uint32_t packetSize = 1024;
-  uint32_t maxPacketCount = 18;
+  uint32_t maxPacketCount = 1;
   Time interPacketInterval = Seconds (1.);
   UdpEchoClientHelper client (i.GetAddress (1), port);
   client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
@@ -144,7 +144,7 @@ main (int argc, char *argv[])
   //
   apps = client.Install ("/Names/client");
   apps.Start (Seconds (2.0));
-  apps.Stop (Seconds (20.0));
+  apps.Stop (Seconds (10.0));
 
   //
   // Use the Config system to connect a trace source using the object name
@@ -170,13 +170,13 @@ main (int argc, char *argv[])
   //
   // since nodes two and three have no associated names.
   //
-  //csma.EnablePcapAll ("object-names");
+  csma.EnablePcapAll ("object-names");
 
   //
   // We can also create a trace file with a name we completely control by
   // overriding a couple of default parameters.
   //
- // csma.EnablePcap ("client-device.pcap", d.Get (0), false, true);
+  csma.EnablePcap ("client-device.pcap", d.Get (0), false, true);
 
   Simulator::Run ();
   Simulator::Destroy ();
