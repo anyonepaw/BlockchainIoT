@@ -114,6 +114,7 @@ main (int argc, char *argv[])
   spokeBulkApps1.Start (Seconds (start2));
   spokeBulkApps1.Stop (Seconds (stop2));
 
+  AnimationInterface anim ("my_example_1.xml");
 
   NS_LOG_INFO ("Enable static global routing.");
   // Turn on global static routing so we can actually be

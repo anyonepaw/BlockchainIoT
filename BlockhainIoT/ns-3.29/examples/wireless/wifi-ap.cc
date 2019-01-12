@@ -179,8 +179,8 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace));
 
   AthstatsHelper athstats;
-  athstats.EnableAthstats ("athstats-sta", stas);
-  athstats.EnableAthstats ("athstats-ap", ap);
+ // athstats.EnableAthstats ("athstats-sta", stas);
+ // athstats.EnableAthstats ("athstats-ap", ap);
 
   Simulator::Run ();
 

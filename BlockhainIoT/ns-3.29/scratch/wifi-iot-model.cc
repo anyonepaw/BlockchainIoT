@@ -1,3 +1,10 @@
+/*
+ * wifi-iot-model.cc
+ *
+ *  Created on: Dec 14, 2018
+ *      Author: lika
+ */
+
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -30,10 +37,8 @@
 //            AP            AP
 //       *    *             *    *
 //       |    |             |    |
-//      n3   n0     n1     n2   n4
-//            |      |      |
-//            ================
-//              LAN 10.1.3.0
+//      n3   n0             n2   n4
+//
 
 using namespace ns3;
 
@@ -44,25 +49,17 @@ int main(int argc, char *argv[]) {
 	CommandLine cmd;
 	cmd.Parse(argc, argv);
 
-	//Create a bus topology
-	CsmaHelper csma;
-	csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
-	csma.SetChannelAttribute("Delay", TimeValue(NanoSeconds(6560)));
-
-	NodeContainer csmaNodes;
-	csmaNodes.Create(3);
-	NetDeviceContainer csmaDevices = csma.Install(csmaNodes);
 
 	//Create two wi-fi networks with adjacent bus nodes:
 	NodeContainer vlan1Nodes;
 	vlan1Nodes.Create(2);
 	NodeContainer vlan1Ap;
-    vlan1Ap.Add(csmaNodes.Get(0));
+    vlan1Ap.Create(1);
 
 	NodeContainer vlan2Nodes;
 	vlan2Nodes.Create(2);
 	NodeContainer vlan2Ap;
-	vlan2Ap.Add(csmaNodes.Get(2));
+	vlan2Ap.Create(1);
 
 	//Следующий фрагмент кода обеспечивает моделирование wi-fi устройств и
 	//канала связи между ними.
@@ -132,15 +129,16 @@ int main(int argc, char *argv[]) {
 	mobility2.Install(vlan2Ap);
 
 	InternetStackHelper stack;
-	stack.Install(csmaNodes);
 	stack.Install(vlan1Nodes);
 	stack.Install(vlan2Nodes);
 
+	InternetStackHelper stack2;
+    stack2.Install(vlan1Ap);
+	stack2.Install(vlan2Ap);
+
 	Ipv4AddressHelper address;
 
-	address.SetBase("10.1.1.0", "255.255.255.0");
-	Ipv4InterfaceContainer csmaInterfaces;
-	csmaInterfaces = address.Assign(csmaDevices);
+
 
 	address.SetBase("10.1.2.0", "255.255.255.0");
 	address.Assign(vlan1Devices);
@@ -151,12 +149,16 @@ int main(int argc, char *argv[]) {
 	address.Assign(vlan2ApDevice);
 
 	//Server on the middle node:
+	/*
 	UdpEchoServerHelper echoServer(9);
-	ApplicationContainer serverApps = echoServer.Install(csmaNodes.Get(1));
+	ApplicationContainer serverApps = echoServer.Install(vlan1Ap.Get(1));
+	ApplicationContainer serverApps2 = echoServer.Install(vlan1Ap.Get(1));
 	serverApps.Start(Seconds(1.0));
 	serverApps.Stop(Seconds(10.0));
+	serverApps2.Start(Seconds(1.0));
+	serverApps2.Stop(Seconds(10.0));
 
-	UdpEchoClientHelper echoClient(csmaInterfaces.GetAddress(1), 9);
+	UdpEchoClientHelper echoClient(wfiInterfaces.GetAddress(1), 9);
 	echoClient.SetAttribute("MaxPackets", UintegerValue(5));
 	echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
 	echoClient.SetAttribute("PacketSize", UintegerValue(1024));
@@ -168,15 +170,16 @@ int main(int argc, char *argv[]) {
 	ApplicationContainer clientApp2 = echoClient.Install(vlan2Nodes.Get(0));
 	clientApp2.Start(Seconds(2.0));
 	clientApp2.Stop(Seconds(10.0));
-
+*/
 	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 	Simulator::Stop(Seconds(10.0));
-
+/*
 	phy1.EnablePcap("l3", vlan1Devices.Get(0));
 	phy2.EnablePcap("l3", vlan2Devices.Get(0));
-	csma.EnablePcap("l3", csmaDevices.Get(0), true);
+*/
 
 	Simulator::Run();
 	Simulator::Destroy();
 	return 0;
 }
+
