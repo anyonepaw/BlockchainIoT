@@ -18,126 +18,173 @@
 #include "ns3/mobility-module.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
-#include "wifi-80211p-helper.h"
-
+#include "ns3/wifi-80211p-helper.h"
+#include "ns3/wifi-phy-standard.h"
+#include "ns3/regular-wifi-mac.h"
+#include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/bridge-helper.h"
+#include "ns3/wifi-module.h"
+#include "ns3/tap-bridge-module.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("Ring");
+NS_LOG_COMPONENT_DEFINE("wifi-iot-model");
 
 int main(int argc, char *argv[]) {
 
+	/**
+	 * Чтение с командной строки
+	 * Необходимо, чтобы запустился визуализатор
+	 */
 	CommandLine cmd;
 	cmd.Parse(argc, argv);
 
 	/**
-	 * Создаем кольцо
+	 * Создадим три узла, представлющих собой локальную сеть ПК
+	 * Они будут составлять одну локальную сеть, но также служить
+	 * шлюзами в локальные подсети интернет-вещей
+	 * И еще один узел, представляющий из себя роутер
 	 */
+	uint32_t numberOfGates = 3;
+	NodeContainer gateNodes;
+	gateNodes.Create(numberOfGates);
+	NodeContainer routerNode;
+	routerNode.Create(1);
 
-	//Создадим три пустых узла
-	NodeContainer ringNodes;
-	ringNodes.Create(3);
+	/**
+	 * С помощью цикла шлюзы по порядку получают свои имена
+	 * Имена появятся при визуализации
+	 */
+	for (uint32_t i = 0; i < numberOfGates; ++i) {
+		std::ostringstream oss;
+		oss << "Gate" << i;
+		Names::Add(oss.str(), gateNodes.Get(i));
+	}
+	Names::Add("Router", routerNode.Get(0));
 
-	//Они будут составлять одну локальную сеть, но также служить
-	//шлюзами в локальные подсети интернет вещей
-	Names::Add("Gate0", ringNodes.Get(0));
-	Names::Add("Gate1", ringNodes.Get(1));
-	Names::Add("Gate2", ringNodes.Get(2));
-
-	//Установим их в нужные позиции
+	/**
+	 * Расставим шлюзы треугольником
+	 */
 	MobilityHelper mobility;
 	mobility.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
 			DoubleValue(30.0), "MinY", DoubleValue(-10.0));
 	mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-	mobility.Install(ringNodes.Get(0));
+	mobility.Install(gateNodes.Get(0));
 
 	MobilityHelper mobility2;
 	mobility2.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
 			DoubleValue(15.0), "MinY", DoubleValue(10.0));
 	mobility2.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-	mobility2.Install(ringNodes.Get(1));
+	mobility2.Install(gateNodes.Get(1));
 
 	MobilityHelper mobility3;
 	mobility3.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
 			DoubleValue(45.0), "MinY", DoubleValue(10.0));
 	mobility3.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-	mobility3.Install(ringNodes.Get(2));
+	mobility3.Install(gateNodes.Get(2));
 
 	/**
-	 * Создадим их собественную локальную сеть
+	 * Поставим роутер выше
 	 */
-	YansWifiChannelHelper channel = YansWifiChannelHelper::Default();
-	YansWifiPhyHelper ringPhy = YansWifiPhyHelper::Default();
+	MobilityHelper mobility4;
+	mobility4.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
+			DoubleValue(60.0), "MinY", DoubleValue(-20.0));
+	mobility4.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+	mobility4.Install(routerNode);
 
-	ringPhy.SetChannel(channel.Create());
-
-
-
-	//После того как уровень PHY настроен, перейдём к настройке уровня MAC
-	//в беспроводных сетях
 	/**
-	 * Helps to create wifi 802.11p objects of WifiNetDevice class.
-	 * This class can help to create a large set of similar wifi
-	 * 802.11p objects and to configure a large set of their attributes
-	 * during creation.
+	 * Теперь настроим общий для всех Wi-Fi
 	 */
-	Wifi80211pHelper  wifi;
-	wifi.SetRemoteStationManager("ns3::RegularWifiMac");
+	WifiHelper wifi;
+	wifi.SetStandard(WIFI_PHY_STANDARD_80211a);
+	YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default();
+	YansWifiPhyHelper gatesPhy = YansWifiPhyHelper::Default();
+	YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
+	wifiPhy.SetChannel(wifiChannel.Create());
+	gatesPhy.SetChannel(wifiChannel.Create());
 
-	//Следующий фрагмент кода обеспечивает моделирование wi-fi устройств и
-	//канала связи между ними.
-	//Настройка PHY уровня и канала связи
-	WifiMacHelper ringMac;
-	Ssid ringSsid = Ssid("ring-ssid");
-	ringMac.SetType("ns3::RegularWifiMac", "Ssid", SsidValue(ringSsid),
+	/**
+	 * Создадим локальную сеть шлюзов
+	 */
+	WifiMacHelper gatesMac;
+	Ssid gatesSsid = Ssid("Gates");
+	gatesMac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(gatesSsid),
 			"ActiveProbing", BooleanValue(false));
-	NetDeviceContainer ringDevices = wifi.Install(ringPhy, ringMac, ringNodes);
+	NetDeviceContainer gateDevices = wifi.Install(gatesPhy, gatesMac,
+			gateNodes);
+	gatesMac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(gatesSsid));
+	NetDeviceContainer routerApDevice = wifi.Install(gatesPhy, gatesMac,
+			routerNode);
 
+	//for (uint32_t i = 0; i < numberOfGates; i++) {
+	//	gateWiFiDevices.push_back(gateDevices.Get(i));
+	//}
 
+	/**
+	 * Раздаем адреса
+	 */
+	InternetStackHelper stack;
+	stack.Install(gateNodes);
+	stack.Install(routerNode);
 
-	 WifiNetDevice wifiRingDevices;
-	wifiRingDevices.SetNode(ringNodes.Get(0));
-	wifiRingDevices.SetNode(ringNodes.Get(1));
-	wifiRingDevices.SetNode(ringNodes.Get(2));
+	Ipv4AddressHelper addressIpv4;
+	addressIpv4.SetBase("192.168.1.0", "255.255.255.0");
+	addressIpv4.Assign(gateDevices);
+	Ipv4InterfaceContainer routerApDeviceInterface;
+	routerApDeviceInterface = addressIpv4.Assign(routerApDevice);
 
+	/**
+	 * Создадим мосты "расположенные" на шлюзах
+	 */
 
-
-
-
-	//Create two wi-fi networks with adjacent bus nodes:
+	//TapBridgeHelper tapBridge;
+	//	tapBridge.SetAttribute("Mode", StringValue("UseLocal"));
+	//tapBridge.SetAttribute("DeviceName", StringValue("tap-left"));
+	//tapBridge.Install(gateNodes.Get(0), gateDevices.Get(0));
+	/**
+	 * Создадим узлы-интернет-вещи (узлы локальной подсети)
+	 * для каждого шлюза
+	 */
 	NodeContainer vlan1Nodes;
 	vlan1Nodes.Create(2);
-	NodeContainer gate;
-	gate.Add(ringNodes.Get(0));
+	NodeContainer gate1;
+	gate1.Add(gateNodes.Get(0));
 
-	/**
-	 * NodeContainer - special container for nodes
-	 * There can be one or two nodes (in this case there will
-	 * be a connection between nodes)
-	 * Simply put, it creates node from nothing, like putting a dot
-	 */
 	NodeContainer vlan2Nodes;
 	vlan2Nodes.Create(2);
 	NodeContainer gate2;
-	gate2.Add(ringNodes.Get(2));
+	gate2.Add(gateNodes.Get(1));
 
+	NodeContainer vlan3Nodes;
+	vlan3Nodes.Create(1);
+	NodeContainer gate3;
+	gate3.Add(gateNodes.Get(2));
 
+	/**
+	 * Настроим Wi-Fi для каждой локальной подсети
+	 */
 	YansWifiPhyHelper phy1 = YansWifiPhyHelper::Default();
-	phy1.SetChannel(channel.Create());
 	YansWifiPhyHelper phy2 = YansWifiPhyHelper::Default();
-	phy2.SetChannel(channel.Create());
+	YansWifiPhyHelper phy3 = YansWifiPhyHelper::Default();
+	phy1.SetChannel(wifiChannel.Create());
+	phy2.SetChannel(wifiChannel.Create());
+	phy3.SetChannel(wifiChannel.Create());
 
-	//Данный код создаёт сервис 802.11, устанавливает
-	//его тип равным «ns3 :: StaWifiMac», SSID равным «ns-3-ssid»
-	// и значение атрибута
-	//ActiveProbing (активировать зондирование) с типом «false».
+	/**
+	 * Настраиваем уровень приложения для всех
+	 * Присваиваем vlan-узлам StaWifiMac - адреса non-AP station (STA)
+	 * то есть настраиваем их на прием пакетов от Access Point (AP),
+	 * которым как раз являются шлюзы (gate1, gate2, gate3), но сами они
+	 * не являются точками доступа
+	 */
+
 	WifiMacHelper vlan1Mac;
 	Ssid ssid = Ssid("vlan1-ssid");
 	vlan1Mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid),
 			"ActiveProbing", BooleanValue(false));
 	NetDeviceContainer vlan1Devices = wifi.Install(phy1, vlan1Mac, vlan1Nodes);
 	vlan1Mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid));
-	NetDeviceContainer vlan1ApDevice = wifi.Install(phy1, vlan1Mac, gate);
+	NetDeviceContainer vlan1ApDevice = wifi.Install(phy1, vlan1Mac, gate1);
 
 	WifiMacHelper vlan2Mac;
 	Ssid ssid2 = Ssid("vlan2-ssid");
@@ -147,111 +194,137 @@ int main(int argc, char *argv[]) {
 	vlan2Mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid2));
 	NetDeviceContainer vlan2ApDevice = wifi.Install(phy2, vlan2Mac, gate2);
 
+	WifiMacHelper vlan3Mac;
+	Ssid ssid3 = Ssid("vlan3-ssid");
+	vlan3Mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid3),
+			"ActiveProbing", BooleanValue(false));
+	NetDeviceContainer vlan3Devices = wifi.Install(phy3, vlan3Mac, vlan3Nodes);
+	vlan3Mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid3));
+	NetDeviceContainer vlan3ApDevice = wifi.Install(phy3, vlan3Mac, gate3);
 
 	MobilityHelper vlan1Node0;
 	vlan1Node0.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-			DoubleValue(0.0), "MinY", DoubleValue(0.0));
+			DoubleValue(0.0), "MinY", DoubleValue(-10.0));
 	vlan1Node0.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	vlan1Node0.Install(vlan1Nodes.Get(0));
 
 	MobilityHelper vlan1Node1;
 	vlan1Node1.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-				DoubleValue(0.0), "MinY", DoubleValue(0.0));
+			DoubleValue(0.0), "MinY", DoubleValue(-20.0));
 	vlan1Node1.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	vlan1Node1.Install(vlan1Nodes.Get(1));
 
-
 	MobilityHelper vlan2Node0;
 	vlan2Node0.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-			DoubleValue(60.0), "MinY", DoubleValue(10.0));
+			DoubleValue(-10.0), "MinY", DoubleValue(25.0));
 	vlan2Node0.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	vlan2Node0.Install(vlan2Nodes.Get(0));
 
 	MobilityHelper vlan2Node1;
 	vlan2Node1.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-			DoubleValue(60.0), "MinY", DoubleValue(0.0));
+			DoubleValue(0.0), "MinY", DoubleValue(30.0));
 	vlan2Node1.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	vlan2Node1.Install(vlan2Nodes.Get(1));
 
-
-
-	/**
-	 * Настраиваем уровень приложения для всех
-	 */
-
-	InternetStackHelper stack;
+	MobilityHelper vlan3Node0;
+	vlan3Node0.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
+			DoubleValue(60.0), "MinY", DoubleValue(30.0));
+	vlan3Node0.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+	vlan3Node0.Install(vlan3Nodes.Get(0));
 
 	stack.Install(vlan1Nodes);
 	stack.Install(vlan2Nodes);
-	stack.Install(ringNodes);
+	stack.Install(vlan3Nodes);
 
-	Ipv4AddressHelper addressIpv4;
-
-	//Address address("10.1.1.0", "255.255.255.0");
-	//wifiRingDevices.SetAddress(address);
-
-	//Ipv4InterfaceContainer ringGate0Dev;
-	//ringGate0Dev = addressIpv4.Assign(wifiRingDevices.Get(0));
-
-	addressIpv4.SetBase("10.5.2.0", "255.255.255.0");
+	addressIpv4.SetBase("10.0.0.0", "255.255.255.0");
 	addressIpv4.Assign(vlan1Devices);
-	addressIpv4.Assign(vlan1ApDevice);
+	Ipv4InterfaceContainer vlan1ApDeviceInterface;
+	vlan1ApDeviceInterface = addressIpv4.Assign(vlan1ApDevice);
 
-	addressIpv4.SetBase("10.4.3.0", "255.255.255.0");
+	addressIpv4.SetBase("10.1.1.0", "255.255.255.0");
 	addressIpv4.Assign(vlan2Devices);
-	Ipv4InterfaceContainer apDev;
-	apDev = addressIpv4.Assign(vlan2ApDevice);
+	Ipv4InterfaceContainer vlan2ApDeviceInterface;
+	vlan2ApDeviceInterface = addressIpv4.Assign(vlan2ApDevice);
 
+	addressIpv4.SetBase("10.2.2.0", "255.255.255.0");
+	addressIpv4.Assign(vlan3Devices);
+	Ipv4InterfaceContainer vlan3ApDeviceInterface;
+	vlan3ApDeviceInterface = addressIpv4.Assign(vlan3ApDevice);
+
+	//tapBridge.SetAttribute("DeviceName", StringValue("tap-right"));
+	//tapBridge.Install(vlan1Nodes.Get(0), vlan1Devices.Get(0));
 
 	/**
-	 * Настраиваем сообщение между узлами кольца
+	 * Запускаем рассылку TCP-пакетов
 	 */
-	/*
-	UdpEchoServerHelper echoServer(9);
-	ApplicationContainer serverApp = echoServer.Install(ringNodes.Get(0));
-	serverApp.Start(Seconds(1.0));
-	serverApp.Stop(Seconds(20.0));
+	std::string protocol = "ns3::TcpSocketFactory";
+	//vlan1ApDeviceInterface.GetAddress(0) - на самом деле здесь хранится только
+	//один интерфейс, но NS3 позволяет достать переменную (в данном случае - адрес)
+	//указав "номер"
+	Address dest = InetSocketAddress(vlan1ApDeviceInterface.GetAddress(0),
+			1025);
+	OnOffHelper onoff = OnOffHelper(protocol, dest);
+	onoff.SetAttribute("OnTime",
+			StringValue("ns3::ConstantRandomVariable[Constant=1]"));
+	onoff.SetAttribute("OffTime",
+			StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+	//Config::SetDefault("ns3::OnOffApplication::PacketSize", UintegerValue(137));
+	Config::SetDefault("ns3::OnOffApplication::DataRate",
+			StringValue("100kb/s"));
 
-	UdpEchoClientHelper echoClient(ringGate0Dev.GetAddress(0), 9);
-	echoClient.SetAttribute("MaxPackets", UintegerValue(5));
-	echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
-	echoClient.SetAttribute("PacketSize", UintegerValue(1024));
-*/
-	/*
-	ApplicationContainer ringClientApp = echoClient.Install(ringNodes.Get(2));
-	ringClientApp.Start(Seconds(2.0));
-	ringClientApp.Stop(Seconds(20.0));
-
-	UdpEchoServerHelper echoServer1(9);
-	ApplicationContainer serverApp1 = echoServer.Install(ringNodes.Get(2));
-	serverApp1.Start(Seconds(1.0));
-	serverApp1.Stop(Seconds(20.0));
-
-	UdpEchoClientHelper echoClient1(apDev.GetAddress(0), 9);
-	echoClient1.SetAttribute("MaxPackets", UintegerValue(5));
-	echoClient1.SetAttribute("Interval", TimeValue(Seconds(1.0)));
-	echoClient1.SetAttribute("PacketSize", UintegerValue(1024));
-
-	ApplicationContainer ringClientApp2 = echoClient.Install(ringNodes.Get(1));
-	ringClientApp2.Start(Seconds(2.0));
-	ringClientApp2.Stop(Seconds(20.0));
-*/
-	/*
-	 ApplicationContainer clientApp1 = echoClient.Install(vlan1Nodes.Get(0));
-	 clientApp1.Start(Seconds(2.0));
-	 clientApp1.Stop(Seconds(10.0));
-
-	 ApplicationContainer clientApp2 = echoClient.Install(vlan2Nodes.Get(0));
-	 clientApp2.Start(Seconds(2.0));
-	 clientApp2.Stop(Seconds(10.0));
+	//VLAN-1
+	/**
+	 * Try not to start all the applications at the same time.
+	 * Give a little time difference. e.g. the first at t=1.01,
+	 * second 1.02 etc.
+	 * This is due to a known bug with ARP timeouts
 	 */
+	ApplicationContainer app = onoff.Install(vlan1Nodes.Get(0));
+	app.Start(Seconds(1));
+	app.Stop(Seconds(30.0));
+	app = onoff.Install(vlan1Nodes.Get(1));
+	app.Start(Seconds(1));
+	app.Stop(Seconds(30.0));
 
-	//????
+	//VLAN-2
+	dest = InetSocketAddress(vlan2ApDeviceInterface.GetAddress(0), 1025);
+	app = onoff.Install(vlan2Nodes.Get(0));
+	app.Start(Seconds(1));
+	app.Stop(Seconds(30.0));
+	app = onoff.Install(vlan2Nodes.Get(1));
+	app.Start(Seconds(1));
+	app.Stop(Seconds(30.0));
+
+	//VLAN-3
+	dest = InetSocketAddress(vlan3ApDeviceInterface.GetAddress(0), 1025);
+	app = onoff.Install(vlan3Nodes.Get(0));
+	app.Start(Seconds(1));
+	app.Stop(Seconds(30.0));
+
+	//ROUTER AND GATES
+	dest = InetSocketAddress(routerApDeviceInterface.GetAddress(0), 1025);
+	ApplicationContainer gateApp = onoff.Install(gateNodes.Get(0));
+	gateApp.Start(Seconds(1.1));
+	gateApp.Stop(Seconds(30.0));
+	//gateApp = onoff.Install(gateNodes.Get(1));
+	//gateApp.Start(Seconds(1.1));
+	//gateApp.Stop(Seconds(30.0));
+	//gateApp = onoff.Install(gateNodes.Get(2));
+	//gateApp.Start(Seconds(1.1));
+	//gateApp.Stop(Seconds(30.0));
+
+	// Create a packet sink to receive these packets
+	//PacketSinkHelper sink("ns3::TcpSocketFactory",
+	//		Address(InetSocketAddress(Ipv4Address::GetAny(), 1025)));
+	//ApplicationContainer apps = sink.Install(gateNodes.Get(0));
+	//apps.Start(Seconds(1.1));
+	//apps.Stop(Seconds(10.0));
+
+	// Create router nodes, initialize routing database and set up the routing
+	// tables in the nodes
 	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-	Simulator::Stop(Seconds(10.0));
-
-	NS_LOG_INFO("Run Simulation.");
+	Simulator::Stop(Seconds(30.0));
 	Simulator::Run();
 	Simulator::Destroy();
 
