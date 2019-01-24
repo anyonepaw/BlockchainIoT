@@ -5,171 +5,119 @@
  *      Author: lika
  */
 
-#include "ns3/command-line.h"
-#include "ns3/config.h"
-#include "ns3/double.h"
-#include "ns3/string.h"
-#include "ns3/log.h"
-#include "ns3/yans-wifi-helper.h"
-#include "ns3/mobility-helper.h"
-#include "ns3/ipv4-address-helper.h"
-#include "ns3/yans-wifi-channel.h"
-#include "ns3/mobility-model.h"
-#include "ns3/internet-stack-helper.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cassert>
+
+#include "ns3/core-module.h"
+#include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/flow-monitor-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("WifiSimpleAdhoc");
-
-void ReceivePacket(Ptr<Socket> socket) {
-	while (socket->Recv()) {
-		NS_LOG_UNCOND("Received one packet!");
-	}
-}
-
-static void GenerateTraffic(Ptr<Socket> socket, uint32_t pktSize,
-		uint32_t pktCount, Time pktInterval) {
-	if (pktCount > 0) {
-		socket->Send(Create<Packet>(pktSize));
-		Simulator::Schedule(pktInterval, &GenerateTraffic, socket, pktSize,
-				pktCount - 1, pktInterval);
-	} else {
-		socket->Close();
-	}
-}
+NS_LOG_COMPONENT_DEFINE("ring");
 
 int main(int argc, char *argv[]) {
-	std::string phyMode("DsssRate1Mbps");
-	double rss = -80;  // -dBm
-	uint32_t packetSize = 1000; // bytes
-	uint32_t numPackets = 1;
-	double interval = 1.0; // seconds
-	bool verbose = false;
+
+	Config::SetDefault("ns3::OnOffApplication::PacketSize", UintegerValue(210));
+	Config::SetDefault("ns3::OnOffApplication::DataRate",
+			StringValue("448kb/s"));
 
 	CommandLine cmd;
-	cmd.AddValue("phyMode", "Wifi Phy mode", phyMode);
-	cmd.AddValue("rss", "received signal strength", rss);
-	cmd.AddValue("packetSize", "size of application packet sent", packetSize);
-	cmd.AddValue("numPackets", "number of packets generated", numPackets);
-	cmd.AddValue("interval", "interval (seconds) between packets", interval);
-	cmd.AddValue("verbose", "turn on all WifiNetDevice log components",
-			verbose);
+	bool enableFlowMonitor = false;
+	cmd.AddValue("EnableMonitor", "Enable Flow Monitor", enableFlowMonitor);
 	cmd.Parse(argc, argv);
-	// Convert to time object
-	Time interPacketInterval = Seconds(interval);
 
-	// Fix non-unicast data rate to be the same as that of unicast
-	Config::SetDefault("ns3::WifiRemoteStationManager::NonUnicastMode",
-			StringValue(phyMode));
-
+	NS_LOG_INFO("Create nodes.");
 	NodeContainer c;
 	c.Create(5);
-
-	// The below set of helpers will help us to put together the wifi NICs we want
-	WifiHelper wifi;
-	if (verbose) {
-		wifi.EnableLogComponents();  // Turn on all Wifi logging
-	}
-	wifi.SetStandard(WIFI_PHY_STANDARD_80211b);
-
-	YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default();
-	// This is one parameter that matters when using FixedRssLossModel
-	// set it to zero; otherwise, gain will be added
-	wifiPhy.Set("RxGain", DoubleValue(0));
-	// ns-3 supports RadioTap and Prism tracing extensions for 802.11b
-	wifiPhy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
-
-	YansWifiChannelHelper wifiChannel;
-	wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
-	// The below FixedRssLossModel will cause the rss to be fixed regardless
-	// of the distance between the two stations, and the transmit power
-	wifiChannel.AddPropagationLoss("ns3::FixedRssLossModel", "Rss",
-			DoubleValue(rss));
-	wifiPhy.SetChannel(wifiChannel.Create());
-
-	// Add a mac and disable rate control
-	WifiMacHelper wifiMac;
-	wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode",
-			StringValue(phyMode), "ControlMode", StringValue(phyMode));
-	// Set it to adhoc mode
-	wifiMac.SetType("ns3::AdhocWifiMac");
-	NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, c);
-
-	// Note that with FixedRssLossModel, the positions below are not
-	// used for received signal strength.
-	MobilityHelper mobility;
-	Ptr<ListPositionAllocator> positionAlloc = CreateObject<
-			ListPositionAllocator>();
-	positionAlloc->Add(Vector(0.0, -20.0, 0.0));
-	positionAlloc->Add(Vector(15.0, -10.0, 0.0));
-	positionAlloc->Add(Vector(10.0, 5.0, 0.0));
-	positionAlloc->Add(Vector(-10.0, 5.0, 0.0));
-	positionAlloc->Add(Vector(-15.0, -10.0, 0.0));
-
-	mobility.SetPositionAllocator(positionAlloc);
-	mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
-	mobility.Install(c);
+	NodeContainer n0n1 = NodeContainer(c.Get(0), c.Get(1));
+	NodeContainer n1n2 = NodeContainer(c.Get(1), c.Get(2));
+	NodeContainer n2n3 = NodeContainer(c.Get(2), c.Get(3));
+	NodeContainer n3n4 = NodeContainer(c.Get(3), c.Get(4));
+	NodeContainer n4n0 = NodeContainer(c.Get(4), c.Get(0));
 
 	InternetStackHelper internet;
 	internet.Install(c);
 
-	Ipv4AddressHelper ipv4;
+	// We create the channels first without any IP addressing information
+	NS_LOG_INFO("Create channels.");
+	PointToPointHelper p2p;
+	p2p.SetDeviceAttribute("DataRate", StringValue("500Kbps"));
+	//p2p.SetChannelAttribute("Delay", StringValue("2ms"));
+	NetDeviceContainer d0d1 = p2p.Install(n0n1);
+	NetDeviceContainer d1d2 = p2p.Install(n1n2);
+	NetDeviceContainer d2d3 = p2p.Install(n2n3);
+	NetDeviceContainer d3d4 = p2p.Install(n3n4);
+	NetDeviceContainer d4d0 = p2p.Install(n4n0);
+
+	// Later, we add IP addresses.
 	NS_LOG_INFO("Assign IP Addresses.");
+	Ipv4AddressHelper ipv4;
 	ipv4.SetBase("10.1.1.0", "255.255.255.0");
-	Ipv4InterfaceContainer i = ipv4.Assign(devices);
+	Ipv4InterfaceContainer i0i1 = ipv4.Assign(d0d1);
+	Ipv4InterfaceContainer i1i2 = ipv4.Assign(d1d2);
+	Ipv4InterfaceContainer i2i3 = ipv4.Assign(d2d3);
+	Ipv4InterfaceContainer i3i4 = ipv4.Assign(d3d4);
+	Ipv4InterfaceContainer i4i0 = ipv4.Assign(d4d0);
+	// Create router nodes, initialize routing database and set up the routing
+	// tables in the nodes.
+	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-	//0->1
-	TypeId tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-	Ptr<Socket> recvSink = Socket::CreateSocket(c.Get(0), tid);
-	InetSocketAddress local = InetSocketAddress(Ipv4Address::GetAny(), 80);
-	recvSink->Bind(local);
-	recvSink->SetRecvCallback(MakeCallback(&ReceivePacket));
+	NS_LOG_INFO("Create Applications.");
+	uint16_t port = 9;   // Discard port (RFC 863)
+	OnOffHelper onoff("ns3::TcpSocketFactory",
+			Address(InetSocketAddress(i3i4.GetAddress(0), port)));
+	onoff.SetConstantRate(DataRate("448kb/s"));
+	ApplicationContainer apps = onoff.Install(c.Get(1));
+	apps.Start(Seconds(1.0));
+	apps.Stop(Seconds(10.0));
 
-	Ptr<Socket> source = Socket::CreateSocket(c.Get(1), tid);
-	InetSocketAddress remote = InetSocketAddress(Ipv4Address("255.255.255.255"),
-			80);
-	source->SetAllowBroadcast(true);
-	source->Connect(remote);
 
-	//1->2
-	tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-	recvSink = Socket::CreateSocket(c.Get(0), tid);
-	 local = InetSocketAddress(Ipv4Address::GetAny(), 80);
-	recvSink->Bind(local);
-	recvSink->SetRecvCallback(MakeCallback(&ReceivePacket));
 
-	source = Socket::CreateSocket(c.Get(1), tid);
-	remote = InetSocketAddress(Ipv4Address("255.255.255.255"),
-			80);
-	//source->SetAllowBroadcast(true);
-	source->Connect(remote);
+	/*
+	 // Create a packet sink to receive these packets
+	 PacketSinkHelper sink("ns3::UdpSocketFactory",
+	 Address(InetSocketAddress(Ipv4Address::GetAny(), port)));
+	 apps = sink.Install(c.Get(3));
+	 apps.Start(Seconds(1.0));
+	 apps.Stop(Seconds(10.0));
+	 */
+	// Flow Monitor
+	FlowMonitorHelper flowmonHelper;
+	if (enableFlowMonitor) {
+		flowmonHelper.InstallAll();
+	}
 
-	//2->3
-    tid = TypeId::LookupByName("ns3::UdpSocketFactory");
-	recvSink = Socket::CreateSocket(c.Get(1), tid);
-	local = InetSocketAddress(Ipv4Address::GetAny(), 80);
-	recvSink->Bind(local);
-	recvSink->SetRecvCallback(MakeCallback(&ReceivePacket));
+	//ddos
+	BulkSendHelper bulkHelper("ns3::TcpSocketFactory", Address());
+	bulkHelper.SetAttribute("MaxBytes", UintegerValue(0));
+	ApplicationContainer spokeBulkApps;
+	spokeBulkApps.Add(bulkHelper.Install(c.Get(4)));
+	AddressValue remoteAddress(InetSocketAddress(i4i0.GetAddress(1), 9));
+	bulkHelper.SetAttribute("Remote", remoteAddress);
 
-	source = Socket::CreateSocket(c.Get(2), tid);
-	 remote = InetSocketAddress(Ipv4Address("255.255.255.255"),
-			80);
-	//source->SetAllowBroadcast(true);
-	source->Connect(remote);
+	spokeBulkApps.Start(Seconds(4));
+	spokeBulkApps.Stop(Seconds(15));
 
-	// Tracing
-	//wifiPhy.EnablePcap ("wifi-simple-adhoc", devices);
 
-	// Output what we are doing
-	NS_LOG_UNCOND(
-			"Testing " << numPackets << " packets sent with receiver rss " << rss);
+	PacketSinkHelper sink("ns3::TcpSocketFactory",
+			InetSocketAddress(Ipv4Address::GetAny(), port));
+	ApplicationContainer sinkApps = sink.Install(c.Get(0));
+	sinkApps.Start(Seconds(4.0));
+	sinkApps.Stop(Seconds(15.0));
 
-	Simulator::ScheduleWithContext(source->GetNode()->GetId(), Seconds(1.0),
-			&GenerateTraffic, source, packetSize, numPackets,
-			interPacketInterval);
 
+	NS_LOG_INFO("Run Simulation.");
+	Simulator::Stop(Seconds(30));
 	Simulator::Run();
-	Simulator::Destroy();
+	NS_LOG_INFO("Done.");
 
+	Simulator::Destroy();
 	return 0;
 }

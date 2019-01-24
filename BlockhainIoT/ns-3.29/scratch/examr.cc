@@ -1,7 +1,7 @@
 /*
- * ring.cc
+ * examr.cc
  *
- *  Created on: Dec 13, 2018
+ *  Created on: Jan 24, 2019
  *      Author: lika
  */
 
@@ -26,8 +26,6 @@ int main(int argc, char *argv[]) {
 
 	NS_LOG_INFO("Build ring topology.");
 	PointToPointHelper pointToPoint;
-	pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
-	pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
 	PointToPointRingHelper ring(number_of_nodes, pointToPoint);
 
 	NS_LOG_INFO("Install Internet stack on all nodes.");
@@ -36,6 +34,8 @@ int main(int argc, char *argv[]) {
 
 	NS_LOG_INFO("Assign IP Addresses.");
 	ring.AssignIpv4Addresses(Ipv4AddressHelper("10.1.1.0", "255.255.255.0"));
+
+	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 	uint16_t port = 50000;
 
@@ -46,20 +46,18 @@ int main(int argc, char *argv[]) {
 			StringValue("ns3::ConstantRandomVariable[Constant=0]"));
 
 	ApplicationContainer ringNodesApps;
-	for (uint32_t i = 0; i < number_of_nodes-1; i++) {
-			AddressValue remoteAddress(InetSocketAddress(ring.GetIpv4Address(i), port));
-			onOffHelper.SetAttribute("Remote", remoteAddress);
-			ringNodesApps.Add(onOffHelper.Install(ring.Get(i+1)));
+	for (uint32_t i = 0; i < number_of_nodes - 1; i++) {
+		AddressValue remoteAddress(
+				InetSocketAddress(ring.GetIpv4Address(i), port));
+		onOffHelper.SetAttribute("Remote", remoteAddress);
+		ringNodesApps.Add(onOffHelper.Install(ring.Get(i + 1)));
 	}
 	AddressValue remoteAddress(InetSocketAddress(ring.GetIpv4Address(0), port));
-			onOffHelper.SetAttribute("Remote", remoteAddress);
-	ringNodesApps.Add(onOffHelper.Install(ring.Get(number_of_nodes-1)));
+	onOffHelper.SetAttribute("Remote", remoteAddress);
+	ringNodesApps.Add(onOffHelper.Install(ring.Get(number_of_nodes - 1)));
 
 	ringNodesApps.Start(Seconds(1.0));
 	ringNodesApps.Stop(Seconds(10.0));
-
-
-	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 	NS_LOG_INFO("Run Simulation.");
 	Simulator::Run();
@@ -68,3 +66,4 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
+
