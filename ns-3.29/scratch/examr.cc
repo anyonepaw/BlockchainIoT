@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
 	CommandLine cmd;
 	cmd.Parse(argc, argv);
 
+
+
 	NS_LOG_INFO("Build ring topology.");
 	PointToPointHelper pointToPoint;
 	PointToPointRingHelper ring(number_of_nodes, pointToPoint);

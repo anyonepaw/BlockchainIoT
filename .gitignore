@@ -2,6 +2,10 @@
 *.patch
 *.log
 
+/.DS_Store
+
+cmake-build-debug/
+
 .lock-waf_*_build
 .waf*
 
