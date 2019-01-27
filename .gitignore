@@ -1,0 +1,11 @@
+*.idea
+*.patch
+*.log
+
+.lock-waf_*_build
+.waf*
+
+build-dir/
+build/
+/.cproject
+/.project
