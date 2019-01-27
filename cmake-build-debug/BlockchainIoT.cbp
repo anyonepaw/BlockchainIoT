@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="BlockchainIoT"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\ns-3.29\;CMake Files\ns-3.29\build\;CMake Files\ns-3.29\build\ns3\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ns-3.29\"/>
+		</Unit>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/build/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\ns-3.29\build\"/>
+		</Unit>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/build/ns3/wifi-phy.h">
+			<Option virtualFolder="CMake Files\ns-3.29\build\ns3\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,2 @@
+/Users/anyonepaw/CLionProjects/BlockchainIoT/BlockhainIoT/ns-3.29/CMakeFiles/rebuild_cache.dir
+/Users/anyonepaw/CLionProjects/BlockchainIoT/BlockhainIoT/ns-3.29/CMakeFiles/edit_cache.dir
