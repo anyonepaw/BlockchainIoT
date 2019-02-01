@@ -48,10 +48,10 @@ RM = /usr/local/Cellar/cmake/3.13.3/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/anyonepaw/CLionProjects/BlockchainIoT/BlockhainIoT
+CMAKE_SOURCE_DIR = /Users/anyonepaw/CLionProjects/BlockchainIoT
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/anyonepaw/CLionProjects/BlockchainIoT/BlockhainIoT/ns-3.29
+CMAKE_BINARY_DIR = /Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29
 
 #=============================================================================
 # Targets provided globally by CMake.

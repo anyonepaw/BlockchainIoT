@@ -19,6 +19,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/netanim-module.h"
 
 using namespace ns3;
 
@@ -67,6 +68,8 @@ main (int argc, char *argv[])
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
+
+  AnimationInterface anim ("first.xml");
 
   Simulator::Run ();
   Simulator::Destroy ();
