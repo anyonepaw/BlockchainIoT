@@ -5,13 +5,53 @@
 		<Option title="BlockchainIoT"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\ns-3.29\;CMake Files\ns-3.29\build\;CMake Files\ns-3.29\build\ns3\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\ns-3.29\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 list_install_components"/>
 					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
@@ -37,18 +77,113 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="BlockchainIoT">
+				<Option output="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/BlockchainIoT" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/ns-3.29/build/ns3"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 BlockchainIoT"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="BlockchainIoT/fast">
+				<Option output="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/BlockchainIoT" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/ns-3.29/build/ns3"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 BlockchainIoT/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ns3">
+				<Option output="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/ns3" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 ns3"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ns3/fast">
+				<Option output="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/ns3" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 ns3/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 		</Build>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/main.cpp">
+			<Option target="BlockchainIoT"/>
+		</Unit>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/main.h">
+			<Option target="BlockchainIoT"/>
+		</Unit>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/src/bridge/helper/bridge-helper.h">
+			<Option target="ns3"/>
+		</Unit>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/src/network/model/net-device.cc">
+			<Option target="ns3"/>
+		</Unit>
+		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/src/network/model/net-device.h">
+			<Option target="ns3"/>
+		</Unit>
 		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\ns-3.29\"/>
-		</Unit>
-		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/build/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\ns-3.29\build\"/>
-		</Unit>
-		<Unit filename="/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29/build/ns3/wifi-phy.h">
-			<Option virtualFolder="CMake Files\ns-3.29\build\ns3\"/>
 		</Unit>
 	</Project>
 </CodeBlocks_project_file>

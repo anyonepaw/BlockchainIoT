@@ -1,4 +1,21 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/anyonepaw/CLionProjects/BlockchainIoT
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug
+CMake Error: Could not find cmake module file: CMakeDeterminens-3.29Compiler.cmake
+CMake Error: Error required internal CMake variable not set, cmake may not be built correctly.
+Missing variable is:
+CMAKE_ns-3.29_COMPILER_ENV_VAR
+CMake Error: Error required internal CMake variable not set, cmake may not be built correctly.
+Missing variable is:
+CMAKE_ns-3.29_COMPILER
+CMake Error: Could not find cmake module file: /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles/3.13.2/CMakens-3.29Compiler.cmake
+CMake Error at ns-3.29/CMakeLists.txt:3 (project):
+  No CMAKE_ns-3.29_COMPILER could be found.
+
+  Tell CMake where to find the compiler by setting the CMake cache entry
+  CMAKE_ns-3.29_COMPILER to the full path to the compiler, or to the compiler
+  name if it is in the PATH.
+
+
+CMake Error: Could not find cmake module file: CMakens-3.29Information.cmake
+CMake Error: CMAKE_ns-3.29_COMPILER not set, after EnableLanguage
+-- Configuring incomplete, errors occurred!
+See also "/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles/CMakeOutput.log".

@@ -16,6 +16,7 @@
 #include "ns3/mobility-model.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/applications-module.h"
+#include "ns3/netanim-module.h"
 
 using namespace ns3;
 
@@ -167,8 +168,12 @@ int main(int argc, char *argv[]) {
 	//		&GenerateTraffic, source, packetSize, numPackets,
 	//		interPacketInterval);
 
+	AnimationInterface anim ("examw.xml");
+
 	Simulator::Run();
 	Simulator::Destroy();
+
+
 
 	return 0;
 }

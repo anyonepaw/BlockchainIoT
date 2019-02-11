@@ -24,10 +24,30 @@
 #include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/bridge-helper.h"
 #include "ns3/wifi-module.h"
+#include "ns3/bridge-net-device.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("wifi-iot-model");
+
+
+
+/**
+ * https://www.nsnam.org/docs/architecture.bak/node34.html
+ *
+ */
+static void
+AddIpv4Stack(Ptr<Node> node)
+{
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  ipv4->SetNode (node);
+  node->AggregateObject (ipv4);
+  //Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
+  //ipv4Impl->SetIpv4 (ipv4);
+  //node->AggregateObject (ipv4Impl);
+}
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -37,6 +57,8 @@ int main(int argc, char *argv[]) {
 	 */
 	CommandLine cmd;
 	cmd.Parse(argc, argv);
+
+
 
 	/**
 	 * Создадим три узла, представлющих собой локальную сеть ПК
@@ -51,6 +73,8 @@ int main(int argc, char *argv[]) {
 	NodeContainer routerNode;
 	routerNode.Create(1);
 
+
+
 	/**
 	 * С помощью цикла шлюзы по порядку получают свои имена
 	 * Имена появятся при визуализации
@@ -61,6 +85,9 @@ int main(int argc, char *argv[]) {
 		Names::Add(oss.str(), gateNodes.Get(i));
 	}
 	Names::Add("Router", routerNode.Get(0));
+
+
+
 
 	/**
 	 * Расставим шлюзы треугольником
@@ -83,6 +110,9 @@ int main(int argc, char *argv[]) {
 	mobility3.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	mobility3.Install(gateNodes.Get(2));
 
+
+
+
 	/**
 	 * Поставим роутер выше
 	 */
@@ -91,6 +121,8 @@ int main(int argc, char *argv[]) {
 			DoubleValue(60.0), "MinY", DoubleValue(-20.0));
 	mobility4.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	mobility4.Install(routerNode);
+
+
 
 	/**
 	 * Теперь настроим общий для всех Wi-Fi
@@ -102,6 +134,8 @@ int main(int argc, char *argv[]) {
 	YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
 	wifiPhy.SetChannel(wifiChannel.Create());
 	gatesPhy.SetChannel(wifiChannel.Create());
+
+
 
 	/**
 	 * Создадим локальную сеть шлюзов
@@ -120,6 +154,10 @@ int main(int argc, char *argv[]) {
 	//	gateWiFiDevices.push_back(gateDevices.Get(i));
 	//}
 
+
+
+
+
 	/**
 	 * Раздаем адреса
 	 */
@@ -134,7 +172,7 @@ int main(int argc, char *argv[]) {
 	routerApDeviceInterface = addressIpv4.Assign(routerApDevice);
 
 
-
+	AddIpv4Stack(gateNodes.Get(0));
 	  // PacketSocketAddress socket;
 	  // socket.SetSingleDevice (staDevs.Get (0)->GetIfIndex ());
 	  // socket.SetPhysicalAddress (staDevs.Get (1)->GetAddress ());
@@ -170,6 +208,10 @@ int main(int argc, char *argv[]) {
 	NodeContainer gate3;
 	gate3.Add(gateNodes.Get(2));
 
+
+
+
+
 	/**
 	 * Настроим Wi-Fi для каждой локальной подсети
 	 */
@@ -179,6 +221,9 @@ int main(int argc, char *argv[]) {
 	phy1.SetChannel(wifiChannel.Create());
 	phy2.SetChannel(wifiChannel.Create());
 	phy3.SetChannel(wifiChannel.Create());
+
+
+
 
 	/**
 	 * Настраиваем уровень приложения для всех
@@ -264,6 +309,10 @@ int main(int argc, char *argv[]) {
 	//tapBridge.SetAttribute("DeviceName", StringValue("tap-right"));
 	//tapBridge.Install(vlan1Nodes.Get(0), vlan1Devices.Get(0));
 
+
+
+
+
 	/**
 	 * Запускаем рассылку TCP-пакетов
 	 */
@@ -335,9 +384,12 @@ int main(int argc, char *argv[]) {
 	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 
+
+
 	/** ANIMATION */
+
 	AnimationInterface anim ("iot.xml");
-    anim.UpdateNodeDescription (vlan1Nodes.Get(0), "IoT3");
+    //anim.UpdateNodeDescription (vlan1Nodes.Get(0), "IoT3");
 	uint32_t resourceId1;
     resourceId1 = anim.AddResource ("/Users/anyonepaw/CLionProjects/BlockchainIoT/icons/iot.png");
 
@@ -345,10 +397,10 @@ int main(int argc, char *argv[]) {
     uint32_t pictureRouter = anim.AddResource ("/Users/anyonepaw/CLionProjects/BlockchainIoT/icons/router.png");
 
     anim.UpdateNodeImage(4, resourceId1);  // "0" is the Node ID
-    anim.UpdateNodeImage(5, resourceId1);  // "0" is the Node ID
+    anim.UpdateNodeImage(5, resourceId1);
 
-    anim.UpdateNodeImage(6, resourceId1);  // "0" is the Node ID
-    anim.UpdateNodeImage(7, resourceId1);  // "0" is the Node ID
+    anim.UpdateNodeImage(6, resourceId1);
+    anim.UpdateNodeImage(7, resourceId1);
 
     anim.UpdateNodeImage(3, pictureRouter);
     anim.UpdateNodeImage(8, resourceId1);
@@ -370,7 +422,17 @@ int main(int argc, char *argv[]) {
     anim.UpdateNodeSize (8, 9, 9);
 
    // anim.UpdateNodeCounter (89, 7, 3.4);
-   anim.EnablePacketMetadata (true);
+
+/*
+ * With the above statement, AnimationInterface records the meta-data
+ * of each packet in the xml trace file. Metadata can be used by NetAnim to provide
+ * better statistics and filter, along with providing some brief information about
+ * the packet such as
+ * TCP sequence number or source & destination IP address during packet animation.
+ */
+  // anim.EnablePacketMetadata (true);
+
+   // Simulator::Schedule (Seconds (0.1), modify);
 
 	Simulator::Stop(Seconds(30.0));
 	Simulator::Run();

@@ -12,6 +12,8 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/point-to-point-layout-module.h"
+#include "ns3/netanim-module.h"
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
@@ -24,11 +26,27 @@ int main(int argc, char *argv[]) {
 	CommandLine cmd;
 	cmd.Parse(argc, argv);
 
+	MobilityHelper mobility;
+		Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
+	positionAlloc->Add(Vector(15.0, 0.0, 0.0));
+	positionAlloc->Add(Vector(30.0, 10.0, 0.0));
+	positionAlloc->Add(Vector(25.0, 25.0, 0.0));
+	positionAlloc->Add(Vector(5.0, 25.0, 0.0));
+	positionAlloc->Add(Vector(0.0, 10.0, 0.0));
 
 
 	NS_LOG_INFO("Build ring topology.");
 	PointToPointHelper pointToPoint;
 	PointToPointRingHelper ring(number_of_nodes, pointToPoint);
+
+
+	mobility.SetPositionAllocator(positionAlloc);
+		mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+		mobility.Install(ring.Get(0));
+		mobility.Install(ring.Get(1));
+		mobility.Install(ring.Get(2));
+		mobility.Install(ring.Get(3));
+		mobility.Install(ring.Get(4));
 
 	NS_LOG_INFO("Install Internet stack on all nodes.");
 	InternetStackHelper internet;
@@ -60,6 +78,10 @@ int main(int argc, char *argv[]) {
 
 	ringNodesApps.Start(Seconds(1.0));
 	ringNodesApps.Stop(Seconds(10.0));
+
+	AnimationInterface anim ("examr.xml");
+
+
 
 	NS_LOG_INFO("Run Simulation.");
 	Simulator::Run();

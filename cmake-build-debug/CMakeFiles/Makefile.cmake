@@ -36,8 +36,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.13.2/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.13.2/CMakeSystem.cmake"
   "../ns-3.29/CMakeLists.txt"
-  "../ns-3.29/build/CMakeLists.txt"
-  "../ns-3.29/build/ns3/wifi-phy.h"
   )
 
 # The corresponding makefile is:
@@ -48,12 +46,12 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "ns-3.29/build/ns3/wifi-phy-listener.h"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "ns-3.29/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "ns-3.29/build/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/BlockchainIoT.dir/DependInfo.cmake"
+  "ns-3.29/CMakeFiles/ns3.dir/DependInfo.cmake"
   )

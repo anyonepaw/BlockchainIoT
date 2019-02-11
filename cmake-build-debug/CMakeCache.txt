@@ -215,17 +215,14 @@ CMAKE_STRIP:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Value Computed by CMake
+PROJECT_NAME_BINARY_DIR:STATIC=/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29
+
+//Value Computed by CMake
+PROJECT_NAME_SOURCE_DIR:STATIC=/Users/anyonepaw/CLionProjects/BlockchainIoT/ns-3.29
+
 //Path to a program.
 ProcessorCount_cmd_sysctl:FILEPATH=/usr/sbin/sysctl
-
-//Value Computed by CMake
-Project_BINARY_DIR:STATIC=/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug
-
-//Value Computed by CMake
-Project_SOURCE_DIR:STATIC=/Users/anyonepaw/CLionProjects/BlockchainIoT
-
-//The directory containing a CMake configuration file for ns-3.29/build/ns3.
-ns-3.29/build/ns3_DIR:PATH=ns-3.29/build/ns3_DIR-NOTFOUND
 
 //Value Computed by CMake
 ns-3.29_BINARY_DIR:STATIC=/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/ns-3.29
@@ -334,7 +331,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

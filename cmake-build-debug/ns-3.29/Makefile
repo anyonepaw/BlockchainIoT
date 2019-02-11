@@ -56,6 +56,52 @@ CMAKE_BINARY_DIR = /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debu
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
+
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -110,14 +156,64 @@ depend:
 	cd /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+# Convenience name for target.
+ns-3.29/CMakeFiles/ns3.dir/rule:
+	cd /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 ns-3.29/CMakeFiles/ns3.dir/rule
+.PHONY : ns-3.29/CMakeFiles/ns3.dir/rule
+
+# Convenience name for target.
+ns3: ns-3.29/CMakeFiles/ns3.dir/rule
+
+.PHONY : ns3
+
+# fast build rule for target.
+ns3/fast:
+	cd /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug && $(MAKE) -f ns-3.29/CMakeFiles/ns3.dir/build.make ns-3.29/CMakeFiles/ns3.dir/build
+.PHONY : ns3/fast
+
+src/network/model/net-device.o: src/network/model/net-device.cc.o
+
+.PHONY : src/network/model/net-device.o
+
+# target to build an object file
+src/network/model/net-device.cc.o:
+	cd /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug && $(MAKE) -f ns-3.29/CMakeFiles/ns3.dir/build.make ns-3.29/CMakeFiles/ns3.dir/src/network/model/net-device.cc.o
+.PHONY : src/network/model/net-device.cc.o
+
+src/network/model/net-device.i: src/network/model/net-device.cc.i
+
+.PHONY : src/network/model/net-device.i
+
+# target to preprocess a source file
+src/network/model/net-device.cc.i:
+	cd /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug && $(MAKE) -f ns-3.29/CMakeFiles/ns3.dir/build.make ns-3.29/CMakeFiles/ns3.dir/src/network/model/net-device.cc.i
+.PHONY : src/network/model/net-device.cc.i
+
+src/network/model/net-device.s: src/network/model/net-device.cc.s
+
+.PHONY : src/network/model/net-device.s
+
+# target to generate assembly for a file
+src/network/model/net-device.cc.s:
+	cd /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug && $(MAKE) -f ns-3.29/CMakeFiles/ns3.dir/build.make ns-3.29/CMakeFiles/ns3.dir/src/network/model/net-device.cc.s
+.PHONY : src/network/model/net-device.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... install"
+	@echo "... list_install_components"
+	@echo "... ns3"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... src/network/model/net-device.o"
+	@echo "... src/network/model/net-device.i"
+	@echo "... src/network/model/net-device.s"
 .PHONY : help
 
 

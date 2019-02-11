@@ -65,40 +65,96 @@ CMAKE_SOURCE_DIR = /Users/anyonepaw/CLionProjects/BlockchainIoT
 CMAKE_BINARY_DIR = /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug
 
 #=============================================================================
+# Target rules for target CMakeFiles/BlockchainIoT.dir
+
+# All Build rule for target.
+CMakeFiles/BlockchainIoT.dir/all:
+	$(MAKE) -f CMakeFiles/BlockchainIoT.dir/build.make CMakeFiles/BlockchainIoT.dir/depend
+	$(MAKE) -f CMakeFiles/BlockchainIoT.dir/build.make CMakeFiles/BlockchainIoT.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target BlockchainIoT"
+.PHONY : CMakeFiles/BlockchainIoT.dir/all
+
+# Include target in all.
+all: CMakeFiles/BlockchainIoT.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/BlockchainIoT.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/BlockchainIoT.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/BlockchainIoT.dir/rule
+
+# Convenience name for target.
+BlockchainIoT: CMakeFiles/BlockchainIoT.dir/rule
+
+.PHONY : BlockchainIoT
+
+# clean rule for target.
+CMakeFiles/BlockchainIoT.dir/clean:
+	$(MAKE) -f CMakeFiles/BlockchainIoT.dir/build.make CMakeFiles/BlockchainIoT.dir/clean
+.PHONY : CMakeFiles/BlockchainIoT.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/BlockchainIoT.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Directory level rules for directory ns-3.29
 
 # Convenience name for "all" pass in the directory.
-ns-3.29/all: ns-3.29/build/all
+ns-3.29/all: ns-3.29/CMakeFiles/ns3.dir/all
 
 .PHONY : ns-3.29/all
 
 # Convenience name for "clean" pass in the directory.
-ns-3.29/clean: ns-3.29/build/clean
+ns-3.29/clean: ns-3.29/CMakeFiles/ns3.dir/clean
 
 .PHONY : ns-3.29/clean
 
 # Convenience name for "preinstall" pass in the directory.
-ns-3.29/preinstall: ns-3.29/build/preinstall
+ns-3.29/preinstall:
 
 .PHONY : ns-3.29/preinstall
 
 #=============================================================================
-# Directory level rules for directory ns-3.29/build
+# Target rules for target ns-3.29/CMakeFiles/ns3.dir
 
-# Convenience name for "all" pass in the directory.
-ns-3.29/build/all:
+# All Build rule for target.
+ns-3.29/CMakeFiles/ns3.dir/all:
+	$(MAKE) -f ns-3.29/CMakeFiles/ns3.dir/build.make ns-3.29/CMakeFiles/ns3.dir/depend
+	$(MAKE) -f ns-3.29/CMakeFiles/ns3.dir/build.make ns-3.29/CMakeFiles/ns3.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target ns3"
+.PHONY : ns-3.29/CMakeFiles/ns3.dir/all
 
-.PHONY : ns-3.29/build/all
+# Include target in all.
+all: ns-3.29/CMakeFiles/ns3.dir/all
 
-# Convenience name for "clean" pass in the directory.
-ns-3.29/build/clean:
+.PHONY : all
 
-.PHONY : ns-3.29/build/clean
+# Build rule for subdir invocation for target.
+ns-3.29/CMakeFiles/ns3.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 ns-3.29/CMakeFiles/ns3.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/anyonepaw/CLionProjects/BlockchainIoT/cmake-build-debug/CMakeFiles 0
+.PHONY : ns-3.29/CMakeFiles/ns3.dir/rule
 
-# Convenience name for "preinstall" pass in the directory.
-ns-3.29/build/preinstall:
+# Convenience name for target.
+ns3: ns-3.29/CMakeFiles/ns3.dir/rule
 
-.PHONY : ns-3.29/build/preinstall
+.PHONY : ns3
+
+# clean rule for target.
+ns-3.29/CMakeFiles/ns3.dir/clean:
+	$(MAKE) -f ns-3.29/CMakeFiles/ns3.dir/build.make ns-3.29/CMakeFiles/ns3.dir/clean
+.PHONY : ns-3.29/CMakeFiles/ns3.dir/clean
+
+# clean rule for target.
+clean: ns-3.29/CMakeFiles/ns3.dir/clean
+
+.PHONY : clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.
