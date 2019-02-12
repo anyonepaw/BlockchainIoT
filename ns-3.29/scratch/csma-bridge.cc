@@ -153,7 +153,7 @@ main (int argc, char *argv[])
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
   //
-  csma.EnablePcapAll ("csma-bridge", false);
+ // csma.EnablePcapAll ("csma-bridge", false);
 
   //
   // Now, do the actual simulation.

@@ -21,7 +21,6 @@
 #include "ns3/wifi-80211p-helper.h"
 #include "ns3/wifi-phy-standard.h"
 #include "ns3/regular-wifi-mac.h"
-#include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/bridge-helper.h"
 #include "ns3/wifi-module.h"
 #include "ns3/bridge-net-device.h"
@@ -36,16 +35,16 @@ NS_LOG_COMPONENT_DEFINE("wifi-iot-model");
  * https://www.nsnam.org/docs/architecture.bak/node34.html
  *
  */
-static void
-AddIpv4Stack(Ptr<Node> node)
-{
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
-  ipv4->SetNode (node);
-  node->AggregateObject (ipv4);
+//static void
+//AddIpv4Stack(Ptr<Node> node)
+//{
+//  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+//  ipv4->SetNode (node);
+//  node->AggregateObject (ipv4);
   //Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
   //ipv4Impl->SetIpv4 (ipv4);
   //node->AggregateObject (ipv4Impl);
-}
+//}
 
 
 
@@ -88,28 +87,26 @@ int main(int argc, char *argv[]) {
 
 
 
-
 	/**
 	 * Расставим шлюзы треугольником
 	 */
 	MobilityHelper mobility;
 	mobility.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-			DoubleValue(30.0), "MinY", DoubleValue(-10.0));
+			DoubleValue(20.0), "MinY", DoubleValue(0.0));
 	mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	mobility.Install(gateNodes.Get(0));
 
 	MobilityHelper mobility2;
 	mobility2.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-			DoubleValue(15.0), "MinY", DoubleValue(10.0));
+			DoubleValue(5.0), "MinY", DoubleValue(20.0));
 	mobility2.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	mobility2.Install(gateNodes.Get(1));
 
 	MobilityHelper mobility3;
 	mobility3.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-			DoubleValue(45.0), "MinY", DoubleValue(10.0));
+			DoubleValue(35.0), "MinY", DoubleValue(20.0));
 	mobility3.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	mobility3.Install(gateNodes.Get(2));
-
 
 
 
@@ -118,7 +115,7 @@ int main(int argc, char *argv[]) {
 	 */
 	MobilityHelper mobility4;
 	mobility4.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
-			DoubleValue(60.0), "MinY", DoubleValue(-20.0));
+			DoubleValue(60.0), "MinY", DoubleValue(0.0));
 	mobility4.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	mobility4.Install(routerNode);
 
@@ -155,9 +152,6 @@ int main(int argc, char *argv[]) {
 	//}
 
 
-
-
-
 	/**
 	 * Раздаем адреса
 	 */
@@ -172,7 +166,7 @@ int main(int argc, char *argv[]) {
 	routerApDeviceInterface = addressIpv4.Assign(routerApDevice);
 
 
-	AddIpv4Stack(gateNodes.Get(0));
+	//AddIpv4Stack(gateNodes.Get(0));
 	  // PacketSocketAddress socket;
 	  // socket.SetSingleDevice (staDevs.Get (0)->GetIfIndex ());
 	  // socket.SetPhysicalAddress (staDevs.Get (1)->GetAddress ());
@@ -184,11 +178,11 @@ int main(int argc, char *argv[]) {
 	/**
 	 * Создадим мосты "расположенные" на шлюзах
 	 */
-
 	//TapBridgeHelper tapBridge;
 	//	tapBridge.SetAttribute("Mode", StringValue("UseLocal"));
 	//tapBridge.SetAttribute("DeviceName", StringValue("tap-left"));
 	//tapBridge.Install(gateNodes.Get(0), gateDevices.Get(0));
+
 	/**
 	 * Создадим узлы-интернет-вещи (узлы локальной подсети)
 	 * для каждого шлюза
@@ -257,6 +251,8 @@ int main(int argc, char *argv[]) {
 	vlan3Mac.SetType("ns3::ApWifiMac", "Ssid", SsidValue(ssid3));
 	NetDeviceContainer vlan3ApDevice = wifi.Install(phy3, vlan3Mac, gate3);
 
+
+	/*Mobility Helper for vlans*/
 	MobilityHelper vlan1Node0;
 	vlan1Node0.SetPositionAllocator("ns3::GridPositionAllocator", "MinX",
 			DoubleValue(0.0), "MinY", DoubleValue(-10.0));
@@ -287,6 +283,12 @@ int main(int argc, char *argv[]) {
 	vlan3Node0.SetMobilityModel("ns3::ConstantPositionMobilityModel");
 	vlan3Node0.Install(vlan3Nodes.Get(0));
 
+
+	// BridgeHelper bridge;
+	// bridge.Install (gateNodes.Get(0), vlan1ApDevice);
+
+
+	/** Install stack*/
 	stack.Install(vlan1Nodes);
 	stack.Install(vlan2Nodes);
 	stack.Install(vlan3Nodes);
@@ -331,7 +333,7 @@ int main(int argc, char *argv[]) {
 	Config::SetDefault("ns3::OnOffApplication::DataRate",
 			StringValue("100kb/s"));
 
-	//VLAN-1
+	/**VLAN-1*/
 	/**
 	 * Try not to start all the applications at the same time.
 	 * Give a little time difference. e.g. the first at t=1.01,
@@ -345,7 +347,7 @@ int main(int argc, char *argv[]) {
 	app.Start(Seconds(1));
 	app.Stop(Seconds(30.0));
 
-	//VLAN-2
+	/**VLAN-2*/
 	dest = InetSocketAddress(vlan2ApDeviceInterface.GetAddress(0), 1025);
 	app = onoff.Install(vlan2Nodes.Get(0));
 	app.Start(Seconds(1));
@@ -354,13 +356,15 @@ int main(int argc, char *argv[]) {
 	app.Start(Seconds(1));
 	app.Stop(Seconds(30.0));
 
-	//VLAN-3
+	/**VLAN-3*/
 	dest = InetSocketAddress(vlan3ApDeviceInterface.GetAddress(0), 1025);
 	app = onoff.Install(vlan3Nodes.Get(0));
 	app.Start(Seconds(1));
 	app.Stop(Seconds(30.0));
 
-	//ROUTER AND GATES
+
+	/** ROUTER AND GATES APPLICATION*/
+
 	dest = InetSocketAddress(routerApDeviceInterface.GetAddress(0), 1025);
 	ApplicationContainer gateApp = onoff.Install(gateNodes.Get(0));
 	gateApp.Start(Seconds(1.1));

@@ -55,6 +55,7 @@
 #include "ns3/animation-interface.h"
 #include "ns3/bridge-helper.h"
 #include "ns3/packet-socket-address.h"
+#include "ns3/netanim-module.h"
 
 using namespace ns3;
 
@@ -182,6 +183,8 @@ int main (int argc, char *argv[])
   ApplicationContainer apps = onoff.Install (staNodes[0].Get (0));
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (60.0));
+
+  AnimationInterface anim ("wifi-wired-bridging.xml");
 
   //wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[0]);
   //wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[1]);
